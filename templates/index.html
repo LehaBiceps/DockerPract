@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .stat-card .number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #fff;
+        }
+        
+        .stat-card .label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 5px;
+        }
+        
+        .main-content {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+        }
+        
+        .input-section {
+            margin-bottom: 30px;
+        }
+        
+        .input-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .input-group.full {
+            grid-template-columns: 1fr;
+        }
+        
+        input, textarea, select {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            flex: 1;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .filters-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .filter-btn {
+            padding: 10px 16px;
+            background: #f0f0f0;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 13px;
+        }
+        
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .filter-btn:hover {
+            border-color: #667eea;
+        }
+        
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .sort-box {
+            min-width: 150px;
+        }
+        
+        .todos-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .todo-item {
+            background: #f9f9f9;
+            border-left: 5px solid #667eea;
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+            transition: all 0.3s;
+        }
+        
+        .todo-item:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .todo-item.completed {
+            opacity: 0.6;
+            background: #f0f0f0;
+        }
+        
+        .todo-item.completed .todo-title {
+            text-decoration: line-through;
+            color: #999;
+        }
+        
+        .todo-item.high {
+            border-left-color: #f44336;
+        }
+        
+        .todo-item.normal {
+            border-left-color: #667eea;
+        }
+        
+        .todo-item.low {
+            border-left-color: #4CAF50;
+        }
+        
+        .todo-checkbox {
+            width: 20px;
+            height: 20px;
+            margin-top: 2px;
+            cursor: pointer;
+        }
+        
+        .todo-content {
+            flex: 1;
+        }
+        
+        .todo-title {
+            font-weight: 600;
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .todo-description {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .todo-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+            color: #999;
+            flex-wrap: wrap;
+        }
+        
+        .priority-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 11px;
+        }
+        
+        .priority-high {
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        .priority-normal {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+        
+        .priority-low {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .todo-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn-small {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-edit {
+            background: #2196F3;
+            color: white;
+        }
+        
+        .btn-edit:hover {
+            background: #1976D2;
+        }
+        
+        .btn-delete {
+            background: #f44336;
+            color: white;
+        }
+        
+        .btn-delete:hover {
+            background: #d32f2f;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+        
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal-header {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .modal-body {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+            flex: 1;
+        }
+        
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+        
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        
+        .error-message.show {
+            display: block;
+        }
+        
+        .success-message {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: none;
+            animation: slideDown 0.3s ease-out;
+        }
+        
+        .success-message.show {
+            display: block;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .input-group {
+                grid-template-columns: 1fr;
+            }
+            
+            .filters-section {
+                flex-direction: column;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+            
+            .sort-box {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📝 To-Do List Manager</h1>
+            <p>Управляйте своими задачами эффективно</p>
+            
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="number" id="totalTasks">0</div>
+                    <div class="label">Всего задач</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="activeTasks">0</div>
+                    <div class="label">Активных</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="completedTasks">0</div>
+                    <div class="label">Выполнено</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="completionRate">0%</div>
+                    <div class="label">Прогресс</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="input-section">
+                <div class="error-message" id="errorMessage"></div>
+                <div class="success-message" id="successMessage"></div>
+                
+                <div class="input-group">
+                    <input type="text" id="todoTitle" placeholder="Название задачи" maxlength="200">
+                    <input type="date" id="todoDueDate">
+                </div>
+                
+                <div class="input-group full">
+                    <textarea id="todoDescription" placeholder="Описание задачи (опционально)"></textarea>
+                </div>
+                
+                <div class="input-group">
+                    <select id="todoPriority">
+                        <option value="normal">Приоритет: Обычный</option>
+                        <option value="high">Приоритет: Высокий</option>
+                        <option value="low">Приоритет: Низкий</option>
+                    </select>
+                    <div class="button-group">
+                        <button class="btn-primary" onclick="addTodo()">Добавить задачу</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="filters-section">
+                <button class="filter-btn active" onclick="filterTodos('all')">Все</button>
+                <button class="filter-btn" onclick="filterTodos('active')">Активные</button>
+                <button class="filter-btn" onclick="filterTodos('completed')">Выполненные</button>
+                
+                <input type="text" class="search-box" id="searchInput" placeholder="Поиск задач..." onkeyup="searchTodos()">
+                
+                <select class="sort-box" id="sortSelect" onchange="sortTodos()">
+                    <option value="created_at">Сортировка: По дате</option>
+                    <option value="priority">Сортировка: По приоритету</option>
+                    <option value="due_date">Сортировка: По сроку</option>
+                </select>
+            </div>
+            
+            <div class="todos-list" id="todosList">
+                <div class="empty-state">
+                    <div>Нет задач. Создайте первую задачу!</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Модальное окно для редактирования -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header">Редактировать задачу</div>
+            <div class="modal-body">
+                <input type="text" id="editTitle" placeholder="Название задачи" maxlength="200">
+                <textarea id="editDescription" placeholder="Описание задачи"></textarea>
+                <input type="date" id="editDueDate">
+                <select id="editPriority">
+                    <option value="normal">Приоритет: Обычный</option>
+                    <option value="high">Приоритет: Высокий</option>
+                    <option value="low">Приоритет: Низкий</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeEditModal()">Отмена</button>
+                <button class="btn-primary" onclick="saveEdit()">Сохранить</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentFilter = 'all';
+        let editingTodoId = null;
+        
+        // Загрузка задач при открытии страницы
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTodos();
+            updateStats();
+        });
+        
+        // Функция для загрузки задач
+        async function loadTodos() {
+            try {
+                const filter = currentFilter;
+                const search = document.getElementById('searchInput').value;
+                const sort = document.getElementById('sortSelect').value;
+                
+                const params = new URLSearchParams({
+                    filter: filter,
+                    search: search,
+                    sort: sort
+                });
+                
+                const response = await fetch(`/api/todos?${params}`);
+                const todos = await response.json();
+                
+                renderTodos(todos);
+            } catch (error) {
+                showError('Ошибка при загрузке задач');
+                console.error(error);
+            }
+        }
+        
+        // Функция для отрисовки задач
+        function renderTodos(todos) {
+            const todosList = document.getElementById('todosList');
+            
+            if (todos.length === 0) {
+                todosList.innerHTML = '<div class="empty-state">Нет задач. Создайте первую задачу!</div>';
+                return;
+            }
+            
+            todosList.innerHTML = todos.map(todo => `
+                <div class="todo-item ${todo.completed ? 'completed' : ''} ${todo.priority}">
+                    <input type="checkbox" class="todo-checkbox" ${todo.completed ? 'checked' : ''} 
+                           onchange="toggleTodo(${todo.id}, this.checked)">
+                    <div class="todo-content">
+                        <div class="todo-title">${escapeHtml(todo.title)}</div>
+                        ${todo.description ? `<div class="todo-description">${escapeHtml(todo.description)}</div>` : ''}
+                        <div class="todo-meta">
+                            <span class="priority-badge priority-${todo.priority}">
+                                ${getPriorityLabel(todo.priority)}
+                            </span>
+                            ${todo.due_date ? `<span>📅 ${todo.due_date}</span>` : ''}
+                            <span>📌 ${new Date(todo.created_at).toLocaleDateString('ru-RU')}</span>
+                        </div>
+                    </div>
+                    <div class="todo-actions">
+                        <button class="btn-small btn-edit" onclick="openEditModal(${todo.id}, '${escapeHtml(todo.title)}', '${escapeHtml(todo.description)}', '${todo.due_date}', '${todo.priority}')">
+                            ✏️ Редакт.
+                        </button>
+                        <button class="btn-small btn-delete" onclick="deleteTodo(${todo.id})">
+                            🗑️ Удалить
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Функция для добавления новой задачи
+        async function addTodo() {
+            const title = document.getElementById('todoTitle').value.trim();
+            const description = document.getElementById('todoDescription').value.trim();
+            const priority = document.getElementById('todoPriority').value;
+            const dueDate = document.getElementById('todoDueDate').value;
+            
+            if (!title) {
+                showError('Пожалуйста, введите название задачи');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/todos', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        title: title,
+                        description: description,
+                        priority: priority,
+                        due_date: dueDate
+                    })
+                });
+                
+                if (response.ok) {
+                    document.getElementById('todoTitle').value = '';
+                    document.getElementById('todoDescription').value = '';
+                    document.getElementById('todoDueDate').value = '';
+                    document.getElementById('todoPriority').value = 'normal';
+                    
+                    showSuccess('Задача добавлена успешно!');
+                    loadTodos();
+                    updateStats();
+                } else {
+                    showError('Ошибка при добавлении задачи');
+                }
+            } catch (error) {
+                showError('Ошибка при добавлении задачи');
+                console.error(error);
+            }
+        }
+        
+        // Функция для переключения статуса задачи
+        async function toggleTodo(id, completed) {
+            try {
+                const response = await fetch(`/api/todos/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ completed: completed })
+                });
+                
+                if (response.ok) {
+                    loadTodos();
+                    updateStats();
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        
+        // Функция для удаления задачи
+        async function deleteTodo(id) {
+            if (confirm('Вы уверены, что хотите удалить эту задачу?')) {
+                try {
+                    const response = await fetch(`/api/todos/${id}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    if (response.ok) {
+                        showSuccess('Задача удалена');
+                        loadTodos();
+                        updateStats();
+                    }
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+        }
+        
+        // Функция для открытия модального окна редактирования
+        function openEditModal(id, title, description, dueDate, priority) {
+            editingTodoId = id;
+            document.getElementById('editTitle').value = title;
+            document.getElementById('editDescription').value = description;
+            document.getElementById('editDueDate').value = dueDate;
+            document.getElementById('editPriority').value = priority;
+            document.getElementById('editModal').classList.add('show');
+        }
+        
+        // Функция для закрытия модального окна
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('show');
+            editingTodoId = null;
+        }
+        
+        // Функция для сохранения изменений
+        async function saveEdit() {
+            const title = document.getElementById('editTitle').value.trim();
+            
+            if (!title) {
+                showError('Пожалуйста, введите название задачи');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/todos/${editingTodoId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        title: title,
+                        description: document.getElementById('editDescription').value,
+                        due_date: document.getElementById('editDueDate').value,
+                        priority: document.getElementById('editPriority').value
+                    })
+                });
+                
+                if (response.ok) {
+                    closeEditModal();
+                    showSuccess('Задача обновлена');
+                    loadTodos();
+                    updateStats();
+                }
+            } catch (error) {
+                showError('Ошибка при обновлении задачи');
+                console.error(error);
+            }
+        }
+        
+        // Функция для фильтрации задач
+        function filterTodos(filter) {
+            currentFilter = filter;
+            
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            loadTodos();
+        }
+        
+        // Функция для поиска задач
+        function searchTodos() {
+            loadTodos();
+        }
+        
+        // Функция для сортировки задач
+        function sortTodos() {
+            loadTodos();
+        }
+        
+        // Функция для обновления статистики
+        async function updateStats() {
+            try {
+                const response = await fetch('/api/stats');
+                const stats = await response.json();
+                
+                document.getElementById('totalTasks').textContent = stats.total;
+                document.getElementById('activeTasks').textContent = stats.active;
+                document.getElementById('completedTasks').textContent = stats.completed;
+                document.getElementById('completionRate').textContent = stats.completion_rate + '%';
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        
+        // Вспомогательные функции
+        function getPriorityLabel(priority) {
+            const labels = {
+                'high': '🔴 Высокий',
+                'normal': '🟡 Обычный',
+                'low': '🟢 Низкий'
+            };
+            return labels[priority] || priority;
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+            setTimeout(() => {
+                errorDiv.classList.remove('show');
+            }, 5000);
+        }
+        
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = message;
+            successDiv.classList.add('show');
+            setTimeout(() => {
+                successDiv.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Закрытие модального окна при клике вне его
+        document.getElementById('editModal').addEventListener('click', (e) => {
+            if (e.target.id === 'editModal') {
+                closeEditModal();
+            }
+        });
+    </script>
+</body>
+</html>
+
