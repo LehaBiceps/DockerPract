@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/LehaBiceps/DockerPract/static/css/main.1a7488ce.css",
+    "main.js": "/LehaBiceps/DockerPract/static/js/main.f8312edc.js",
+    "index.html": "/LehaBiceps/DockerPract/index.html",
+    "main.1a7488ce.css.map": "/LehaBiceps/DockerPract/static/css/main.1a7488ce.css.map",
+    "main.f8312edc.js.map": "/LehaBiceps/DockerPract/static/js/main.f8312edc.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.1a7488ce.css",
+    "static/js/main.f8312edc.js"
+  ]
+}
